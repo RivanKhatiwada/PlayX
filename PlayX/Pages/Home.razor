@@ -1,14 +1,48 @@
 @page "/"
+@inject NavigationManager Navigation
 
-<PageTitle>Home</PageTitle>
+<div class="playx-home-container">
+    <div class="hero-section">
+        <div class="badge-wrapper mud-elevation-z2">
+            <span class="live-indicator"></span>
+            <span class="badge-text">v1.0.4 Online</span>
+        </div>
+        <h1 class="game-title">Play<span>X</span></h1>
+        <p class="game-subtitle">Enter the Cyber Arena & Dominate</p>
+    </div>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor and the .NET 10 Template!</MudText>
+    <div class="menu-card mud-elevation-z8">
+        <MudButton Class="menu-btn play-btn" FullWidth="true" OnClick="GameSelection" Size="Size.Large" Variant="Variant.Filled">
+            <div class="btn-content">
+                <MudIcon Class="btn-icon" Icon="@Icons.Material.Filled.PlayArrow" />
+                <span>Play Now</span>
+            </div>
+        </MudButton>
 
+        <MudButton Class="menu-btn custom-btn" FullWidth="true" OnClick="OpenAvatarCustomizer" Size="Size.Large" Variant="Variant.Outlined">
+            <div class="btn-content">
+                <MudIcon Class="btn-icon" Icon="@Icons.Material.Filled.Face" />
+                <span>Customize Avatar</span>
+            </div>
+        </MudButton>
 
-<MudAlert Severity="Severity.Normal" ContentAlignment="HorizontalAlignment.Start">
-    You can find documentation and examples on our website here:
-    <MudLink Href="https://mudblazor.com" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        <b>www.mudblazor.com</b>
-    </MudLink>
-</MudAlert>
+        <MudButton Class="menu-btn settings-btn" FullWidth="true" OnClick="OpenOptions" Size="Size.Large" Variant="Variant.Text">
+            <div class="btn-content">
+                <MudIcon Class="btn-icon" Icon="@Icons.Material.Filled.Settings" />
+                <span>Options</span>
+            </div>
+        </MudButton>
+    </div>
+
+    <div class="footer-info">
+        <div class="stat-item">
+            <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Small" />
+            <span>1,420 Players Online</span>
+        </div>
+        <span class="separator">•</span>
+        <div class="stat-item">
+            <MudIcon Icon="@Icons.Material.Filled.SignalCellularAlt" Size="Size.Small" />
+            <span>14ms</span>
+        </div>
+    </div>
+</div>

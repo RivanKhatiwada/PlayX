@@ -1,0 +1,95 @@
+@page "/selection"
+
+<PageTitle>PlayX - Select Game Mode</PageTitle>
+
+<main class="selection-page-wrapper fade-in">
+    <!-- Header Section -->
+    <header class="header-section">
+        <div class="badge-container mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.SportsEsports" Size="Size.Small" Color="Color.Primary" Class="mr-2 icon-pulse" />
+            <span class="badge-text">CHOOSE YOUR ARENA</span>
+        </div>
+        <h1 class="page-title">Choose Your Way to Play</h1>
+    </header>
+
+    <!-- Game Modes Grid (Fixed 2x2 stretched layout) -->
+    <section class="cards-grid">
+        
+        <!-- 1. Play Alone (Solo) -->
+        <article class="game-card" @onclick='() => SelectMode("solo")'>
+            <div class="card-ambient-glow"></div>
+            <div class="card-top">
+                <div class="card-header-row">
+                    <div class="icon-box">
+                        <MudIcon Icon="@Icons.Material.Filled.SmartToy" Color="Color.Primary" Class="card-icon" />
+                    </div>
+                    <span class="chip-pill">Practice</span>
+                </div>
+                <h2 class="card-title">Play Alone</h2>
+            </div>
+            <div class="card-bottom">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward">
+                    Solo
+                </MudButton>
+            </div>
+        </article>
+
+        <!-- 2. Same Screen (Local Co-Op) -->
+        <article class="game-card" @onclick='() => SelectMode("local")'>
+            <div class="card-ambient-glow"></div>
+            <div class="card-top">
+                <div class="card-header-row">
+                    <div class="icon-box">
+                        <MudIcon Icon="@Icons.Material.Filled.Devices" Color="Color.Primary" Class="card-icon" />
+                    </div>
+                    <span class="chip-pill">Co-Op</span>
+                </div>
+                <h2 class="card-title">Same Screen</h2>
+            </div>
+            <div class="card-bottom">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward">
+                    Local
+                </MudButton>
+            </div>
+        </article>
+
+        <!-- 3. Play with Friends (Party Hub) -->
+        <article class="game-card" @onclick='() => SelectMode("friends")'>
+            <div class="card-ambient-glow"></div>
+            <div class="card-top">
+                <div class="card-header-row">
+                    <div class="icon-box">
+                        <MudIcon Icon="@Icons.Material.Filled.Groups" Color="Color.Primary" Class="card-icon" />
+                    </div>
+                    <span class="chip-pill">Private</span>
+                </div>
+                <h2 class="card-title">Play with Friends</h2>
+            </div>
+            <div class="card-bottom">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward">
+                    Party Hub
+                </MudButton>
+            </div>
+        </article>
+
+        <!-- 4. Play Against Randoms (Matchmaking) -->
+        <article class="game-card" @onclick='() => SelectMode("random")'>
+            <div class="card-ambient-glow"></div>
+            <div class="card-top">
+                <div class="card-header-row">
+                    <div class="icon-box">
+                        <MudIcon Icon="@Icons.Material.Filled.Public" Color="Color.Primary" Class="card-icon" />
+                    </div>
+                    <span class="chip-pill">Ranked</span>
+                </div>
+                <h2 class="card-title">Random Match</h2>
+            </div>
+            <div class="card-bottom">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward">
+                    Matchmaking
+                </MudButton>
+            </div>
+        </article>
+
+    </section>
+</main>

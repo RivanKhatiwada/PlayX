@@ -1,0 +1,125 @@
+.playx-home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    padding: 1rem;
+    text-align: center;
+}
+
+.hero-section {
+    margin-bottom: 2rem;
+}
+
+.badge-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--mud-palette-surface);
+    border: 1px solid var(--mud-palette-lines-default);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+}
+
+.live-indicator {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+}
+
+.badge-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.game-title {
+    font-size: 4rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--mud-palette-text-primary);
+}
+
+.game-title span {
+    color: var(--mud-palette-primary);
+}
+
+.game-subtitle {
+    font-size: 1rem;
+    color: var(--mud-palette-text-secondary);
+    margin-top: 0.5rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.menu-card {
+    background: var(--mud-palette-surface);
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.menu-btn {
+    font-weight: 700 !important;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 12px !important;
+    padding: 12px 0 !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.btn-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-icon {
+    font-size: 1.3rem !important;
+}
+
+.menu-btn:hover {
+    transform: translateY(-2px);
+}
+
+.play-btn {
+    box-shadow: 0 4px 20px rgba(255, 77, 109, 0.3);
+}
+
+.custom-btn {
+    border-color: var(--mud-palette-lines-default) !important;
+}
+
+.footer-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 2rem;
+    color: var(--mud-palette-text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.separator {
+    opacity: 0.5;
+}
