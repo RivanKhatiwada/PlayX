@@ -1,0 +1,36 @@
+@page "/game/{ModeOrCode}"
+@inherits GameComponentBase
+
+<PageTitle>PlayX - Arena</PageTitle>
+
+<main class="game-arena-wrapper fade-in">
+    <header class="game-header">
+        <div class="room-info">
+            <MudChip T="string" Color="Color.Primary" Variant="Variant.Outlined">Mode: @DisplayMode</MudChip>
+            @if (!IsOfflineMode)
+            {
+                <MudChip T="string" Color="Color.Secondary" Variant="Variant.Filled">Room: @ModeOrCode</MudChip>
+            }
+        </div>
+        <MudButton Variant="Variant.Text" Color="Color.Error" StartIcon="@Icons.Material.Filled.ExitToApp" OnClick="LeaveGame">
+            Leave Arena
+        </MudButton>
+    </header>
+
+    <section class="game-board-container">
+        @if (_isLoading)
+        {
+            <div class="loader-box">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                <p class="mt-3">Connecting to arena...</p>
+            </div>
+        }
+        else
+        {
+            <div class="active-game-placeholder">
+                <h2 class="arena-title">Game Arena Active</h2>
+                <p class="arena-subtitle">Implement your game board logic here for <strong>@ModeOrCode</strong>.</p>
+            </div>
+        }
+    </section>
+</main>

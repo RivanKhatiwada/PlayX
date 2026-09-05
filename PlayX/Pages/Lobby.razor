@@ -1,0 +1,60 @@
+@page "/lobby"
+@inherits LobbyComponentBase
+
+<PageTitle>PlayX - Party Lobby</PageTitle>
+
+<main class="lobby-wrapper fade-in">
+    <header class="header-section">
+        <div class="badge-container mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.Groups" Size="Size.Small" Color="Color.Primary" Class="mr-2 icon-pulse" />
+            <span class="badge-text">PARTY HUB</span>
+        </div>
+        <h1 class="page-title">Play With Friends</h1>
+    </header>
+
+    <section class="lobby-cards-grid">
+        <!-- Host Room Card -->
+        <article class="game-card">
+            <div class="card-ambient-glow"></div>
+            <div class="card-top">
+                <div class="card-header-row">
+                    <div class="icon-box">
+                        <MudIcon Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Class="card-icon" />
+                    </div>
+                    <span class="chip-pill">Host</span>
+                </div>
+                <h2 class="card-title">Create Private Room</h2>
+                <p class="card-desc">Generate a unique room code and invite your friends to play.</p>
+            </div>
+            <div class="card-bottom">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" 
+                           OnClick="HostNewRoomAsync" Disabled="_isLoading">
+                    Create Room
+                </MudButton>
+            </div>
+        </article>
+
+        <!-- Join Room Card -->
+        <article class="game-card">
+            <div class="card-ambient-glow"></div>
+            <div class="card-top">
+                <div class="card-header-row">
+                    <div class="icon-box">
+                        <MudIcon Icon="@Icons.Material.Filled.Login" Color="Color.Secondary" Class="card-icon" />
+                    </div>
+                    <span class="chip-pill">Join</span>
+                </div>
+                <h2 class="card-title">Join Existing Room</h2>
+                <p class="card-desc">Enter a 6-digit room code shared by your friend to jump straight in.</p>
+                
+                <MudTextField T="string" @bind-Value="RoomCodeInput" Label="Room Code" Variant="Variant.Outlined" Class="mt-4" MaxLength="6" Placeholder="e.g. A4B9X2" />
+            </div>
+            <div class="card-bottom">
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Class="action-btn" 
+                           OnClick="JoinExistingRoomAsync" Disabled="_isLoading || string.IsNullOrWhiteSpace(RoomCodeInput)">
+                    Join Room
+                </MudButton>
+            </div>
+        </article>
+    </section>
+</main>

@@ -12,11 +12,10 @@
         <h1 class="page-title">Choose Your Way to Play</h1>
     </header>
 
-    <!-- Game Modes Grid (Fixed 2x2 stretched layout) -->
+    <!-- Game Modes Grid -->
     <section class="cards-grid">
-        
         <!-- 1. Play Alone (Solo) -->
-        <article class="game-card" @onclick='() => SelectMode("solo")'>
+        <article class="game-card" @onclick='() => SelectModeAsync("solo")'>
             <div class="card-ambient-glow"></div>
             <div class="card-top">
                 <div class="card-header-row">
@@ -35,7 +34,7 @@
         </article>
 
         <!-- 2. Same Screen (Local Co-Op) -->
-        <article class="game-card" @onclick='() => SelectMode("local")'>
+        <article class="game-card" @onclick='() => SelectModeAsync("local")'>
             <div class="card-ambient-glow"></div>
             <div class="card-top">
                 <div class="card-header-row">
@@ -54,7 +53,7 @@
         </article>
 
         <!-- 3. Play with Friends (Party Hub) -->
-        <article class="game-card" @onclick='() => SelectMode("friends")'>
+        <article class="game-card" @onclick='() => SelectModeAsync("friends")'>
             <div class="card-ambient-glow"></div>
             <div class="card-top">
                 <div class="card-header-row">
@@ -73,7 +72,7 @@
         </article>
 
         <!-- 4. Play Against Randoms (Matchmaking) -->
-        <article class="game-card" @onclick='() => SelectMode("random")'>
+        <article class="game-card" @onclick='() => SelectModeAsync("random")'>
             <div class="card-ambient-glow"></div>
             <div class="card-top">
                 <div class="card-header-row">
@@ -90,6 +89,5 @@
                 </MudButton>
             </div>
         </article>
-
     </section>
 </main>
