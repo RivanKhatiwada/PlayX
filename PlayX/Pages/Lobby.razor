@@ -1,5 +1,4 @@
 @page "/lobby"
-@inherits LobbyComponentBase
 
 <PageTitle>PlayX - Party Lobby</PageTitle>
 
@@ -27,8 +26,7 @@
                 <p class="card-desc">Generate a unique room code and invite your friends to play.</p>
             </div>
             <div class="card-bottom">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" 
-                           OnClick="HostNewRoomAsync" Disabled="_isLoading">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" >
                     Create Room
                 </MudButton>
             </div>
@@ -47,11 +45,10 @@
                 <h2 class="card-title">Join Existing Room</h2>
                 <p class="card-desc">Enter a 6-digit room code shared by your friend to jump straight in.</p>
                 
-                <MudTextField T="string" @bind-Value="RoomCodeInput" Label="Room Code" Variant="Variant.Outlined" Class="mt-4" MaxLength="6" Placeholder="e.g. A4B9X2" />
+                <MudTextField T="string" Label="Room Code" Variant="Variant.Outlined" Class="mt-4" MaxLength="6" Placeholder="e.g. A4B9X2" />
             </div>
             <div class="card-bottom">
-                <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Class="action-btn" 
-                           OnClick="JoinExistingRoomAsync" Disabled="_isLoading || string.IsNullOrWhiteSpace(RoomCodeInput)">
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Class="action-btn">
                     Join Room
                 </MudButton>
             </div>
