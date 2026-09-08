@@ -11,47 +11,71 @@
         <h1 class="page-title">Play With Friends</h1>
     </header>
 
-    <section class="lobby-cards-grid">
-        <!-- Host Room Card -->
-        <article class="game-card">
-            <div class="card-ambient-glow"></div>
-            <div class="card-top">
-                <div class="card-header-row">
-                    <div class="icon-box">
-                        <MudIcon Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Class="card-icon" />
+    @if (!IsInLobby)
+    {
+        <section class="lobby-cards-grid">
+            <!-- Host Room Card -->
+            <article class="game-card">
+                <div class="card-ambient-glow"></div>
+                <div class="card-top">
+                    <div class="card-header-row">
+                        <div class="icon-box">
+                            <MudIcon Icon="@Icons.Material.Filled.AddBox" Color="Color.Primary" Class="card-icon" />
+                        </div>
+                        <span class="chip-pill">Host</span>
                     </div>
-                    <span class="chip-pill">Host</span>
+                    <h2 class="card-title">Create Private Room</h2>
+                    <p class="card-desc">Generate a unique room code and invite your friends to play.</p>
                 </div>
-                <h2 class="card-title">Create Private Room</h2>
-                <p class="card-desc">Generate a unique room code and invite your friends to play.</p>
-            </div>
-            <div class="card-bottom">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" >
-                    Create Room
-                </MudButton>
-            </div>
-        </article>
+                <div class="card-bottom">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" OnClick="OpenGameSelectionDialog">
+                        Create Room
+                    </MudButton>
+                </div>
+            </article>
 
-        <!-- Join Room Card -->
-        <article class="game-card">
-            <div class="card-ambient-glow"></div>
-            <div class="card-top">
-                <div class="card-header-row">
-                    <div class="icon-box">
-                        <MudIcon Icon="@Icons.Material.Filled.Login" Color="Color.Secondary" Class="card-icon" />
+            <!-- Join Room Card -->
+            <article class="game-card">
+                <div class="card-ambient-glow"></div>
+                <div class="card-top">
+                    <div class="card-header-row">
+                        <div class="icon-box">
+                            <MudIcon Icon="@Icons.Material.Filled.Login" Color="Color.Secondary" Class="card-icon" />
+                        </div>
+                        <span class="chip-pill">Join</span>
                     </div>
-                    <span class="chip-pill">Join</span>
+                    <h2 class="card-title">Join Existing Room</h2>
+                    <p class="card-desc">Enter a room code shared by your friend to jump straight in.</p>
+                    
+                    <MudTextField @bind-Value="InputCode" T="string" Label="Room Code" Variant="Variant.Outlined" Class="mt-4" MaxLength="6" Placeholder="e.g. A4B9X2" />
                 </div>
-                <h2 class="card-title">Join Existing Room</h2>
-                <p class="card-desc">Enter a 6-digit room code shared by your friend to jump straight in.</p>
-                
-                <MudTextField T="string" Label="Room Code" Variant="Variant.Outlined" Class="mt-4" MaxLength="6" Placeholder="e.g. A4B9X2" />
-            </div>
-            <div class="card-bottom">
-                <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Class="action-btn">
-                    Join Room
-                </MudButton>
-            </div>
-        </article>
-    </section>
+                <div class="card-bottom">
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Class="action-btn" OnClick="JoinRoom">
+                        Join Room
+                    </MudButton>
+                </div>
+            </article>
+        </section>
+    }
+    else
+    {
+        <section class="lobby-cards-grid" style="max-width: 600px; margin: auto;">
+            <article class="game-card" style="width: 100%;">
+                <div class="card-ambient-glow"></div>
+                <div class="card-top text-center pa-6">
+                    <div class="icon-box mx-auto mb-3">
+                        <MudIcon Icon="@Icons.Material.Filled.Wifi" Color="Color.Success" Class="card-icon" />
+                    </div>
+                    <h2 class="card-title">Room Connection Active</h2>
+                    <p class="card-desc my-3">Your Room Code: <strong style="font-size: 1.2rem; color: var(--mud-palette-primary);">@RoomCode</strong></p>
+                    <MudText Typo="Typo.body1" Class="my-4" Color="Color.Info">@StatusMessage</MudText>
+                </div>
+                <div class="card-bottom">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" FullWidth="true" Class="action-btn" OnClick="() => IsInLobby = false">
+                        Leave Room
+                    </MudButton>
+                </div>
+            </article>
+        </section>
+    }
 </main>

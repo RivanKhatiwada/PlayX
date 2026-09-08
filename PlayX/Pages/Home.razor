@@ -1,5 +1,4 @@
 @page "/"
-@inject NavigationManager Navigation
 
 <div class="playx-home-container">
     <div class="hero-section">
@@ -12,7 +11,7 @@
     </div>
 
     <div class="menu-card mud-elevation-z8">
-        <MudButton Class="menu-btn play-btn" FullWidth="true" Size="Size.Large" Variant="Variant.Filled">
+        <MudButton Class="menu-btn play-btn" FullWidth="true" Size="Size.Large" Variant="Variant.Filled" @onclick="NavigateToSelection">
             <div class="btn-content">
                 <MudIcon Class="btn-icon" Icon="@Icons.Material.Filled.PlayArrow" />
                 <span>Play Now</span>

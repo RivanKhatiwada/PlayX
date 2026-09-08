@@ -13,4 +13,12 @@
     <PackageReference Include="MudBlazor" Version="9.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Interop\peerjs-interop.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="obj\Debug\net10.0\" />
+  </ItemGroup>
+
 </Project>

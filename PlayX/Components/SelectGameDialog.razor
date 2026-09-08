@@ -1,0 +1,69 @@
+<MudDialog>
+    <DialogContent>
+        <div class="pa-6">
+            <div class="text-center mb-6">
+                <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Size="Size.Large" Class="mx-auto mb-3">
+                    <MudIcon Icon="@Icons.Material.Filled.Games" Size="Size.Large" />
+                </MudAvatar>
+                <MudText Typo="Typo.h5" Class="font-weight-bold">Select a Game</MudText>
+                <MudText Typo="Typo.body2" Class="mud-text-secondary">Choose a game and player capacity for your room.</MudText>
+            </div>
+
+            <MudRadioGroup T="string" @bind-Value="SelectedGameName" Class="d-flex flex-column gap-3 w-100">
+                @foreach (var game in _availableGames)
+                {
+                    <div @onclick="() => SelectGame(game.Name)" 
+                         class="pa-4 rounded-lg border cursor-pointer hover-shadow transition-all d-flex justify-space-between align-center w-100 @(SelectedGameName == game.Name ? "border-primary bg-primary-subtle" : "")"
+                         style="cursor: pointer; border: 1px solid var(--mud-palette-lines-default);">
+                        <div>
+                            <MudText Typo="Typo.subtitle1" Class="font-weight-bold">@game.Name</MudText>
+                            <MudChip T="string" Size="Size.Small" Color="Color.Info" Variant="Variant.Outlined" Class="mt-1">
+                                Players: @game.MinPlayers - @game.MaxPlayers max
+                            </MudChip>
+                        </div>
+                        <MudRadio T="string" Value="@game.Name" />
+                    </div>
+                }
+            </MudRadioGroup>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="Cancel" Class="py-2">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@string.IsNullOrEmpty(SelectedGameName)" OnClick="ConfirmSelection" Class="py-2">
+            Confirm & Host
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private string SelectedGameName = string.Empty;
+
+    private record GameInfo(string Name, int MinPlayers, int MaxPlayers);
+
+    private readonly List<GameInfo> _availableGames = new()
+    {
+        new("Tic-Tac-Toe", 2, 2),
+        new("Chess", 2, 2),
+        new("Ludo", 2, 4),
+        new("Auction", 3, 8),
+        new("Midnight Murder", 5, 15),
+        new("Who is Imposter?", 3, 16)
+    };
+
+    private void SelectGame(string name)
+    {
+        SelectedGameName = name;
+    }
+
+    private void ConfirmSelection()
+    {
+        if (!string.IsNullOrEmpty(SelectedGameName))
+        {
+            MudDialog.Close(DialogResult.Ok(SelectedGameName));
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
