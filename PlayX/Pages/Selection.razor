@@ -15,7 +15,7 @@
     <!-- Game Modes Grid -->
     <section class="cards-grid">
         <!-- 1. Play Alone (Solo) -->
-        <article class="game-card" >
+        <article class="game-card" @onclick="OpenSoloGameSelectionDialog">
             <div class="card-ambient-glow"></div>
             <div class="card-top">
                 <div class="card-header-row">
@@ -27,14 +27,14 @@
                 <h2 class="card-title">Play Alone</h2>
             </div>
             <div class="card-bottom">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward" OnClick="OpenSoloGameSelectionDialog">
                     Solo
                 </MudButton>
             </div>
         </article>
 
         <!-- 2. Same Screen (Local Co-Op) -->
-        <article class="game-card" >
+        <article class="game-card" @onclick="OpenLocalGameSelectionDialog">
             <div class="card-ambient-glow"></div>
             <div class="card-top">
                 <div class="card-header-row">
@@ -46,7 +46,7 @@
                 <h2 class="card-title">Same Screen</h2>
             </div>
             <div class="card-bottom">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward" OnClick="OpenLocalGameSelectionDialog">
                     Local
                 </MudButton>
             </div>
@@ -65,14 +65,14 @@
                 <h2 class="card-title">Play with Friends</h2>
             </div>
             <div class="card-bottom">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward" @onclick="NavigateToLobby">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward" OnClick="NavigateToLobby">
                     Party Hub
                 </MudButton>
             </div>
         </article>
 
         <!-- 4. Play Against Randoms (Matchmaking) -->
-        <article class="game-card" >
+        <article class="game-card" @onclick="OpenRandomGameSelectionDialog">
             <div class="card-ambient-glow"></div>
             <div class="card-top">
                 <div class="card-header-row">
@@ -84,7 +84,7 @@
                 <h2 class="card-title">Random Match</h2>
             </div>
             <div class="card-bottom">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="action-btn" EndIcon="@Icons.Material.Filled.ArrowForward" OnClick="OpenRandomGameSelectionDialog">
                     Matchmaking
                 </MudButton>
             </div>

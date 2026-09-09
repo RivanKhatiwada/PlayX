@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\Games\" />
     <Folder Include="obj\Debug\net10.0\" />
   </ItemGroup>
 

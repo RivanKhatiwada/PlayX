@@ -1,0 +1,14 @@
+@page "/game/online/{GameSlug}/{RoomCode}"
+
+<PageTitle>PlayX - Online @GameSlug</PageTitle>
+
+<div class="pa-6">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <h1 class="text-h5 font-weight-bold">Arena: @GameSlug</h1>
+        <span class="mud-text-secondary">Room: <strong>@RoomCode</strong></span>
+    </div>
+
+    <div class="pa-4 rounded-lg bg-surface border">
+        <p>Status: @connectionStatus</p>
+    </div>
+</div>
