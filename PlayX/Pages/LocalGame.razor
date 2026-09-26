@@ -1,15 +1,22 @@
-// File: PlayX/Pages/LocalGame.razor
 @page "/game/pass-and-play/{GameSlug}"
+@using PlayX.Components.Games
 
 <PageTitle>PlayX - Local @GameSlug</PageTitle>
 
-<div class="pa-6">
-    <div class="d-flex justify-space-between align-center mb-4">
-        <h1 class="text-h5 font-weight-bold">Pass & Play Arena: @GameSlug</h1>
-        <span class="mud-text-secondary">Mode: <strong>Same Device Co-Op</strong></span>
+<div class="pa-6 max-w-screen-md mx-auto">
+    <div class="d-flex justify-space-between align-center mb-6">
+        <div>
+            <h1 class="text-h5 font-weight-bold">Pass & Play: @GameSlug</h1>
+            <span class="mud-text-secondary">Mode: <strong>Same Device Co-Op</strong></span>
+        </div>
+        <MudChip T="string" Color="Color.Info" Variant="Variant.Outlined">Local Session</MudChip>
     </div>
 
-    <div class="pa-4 rounded-lg bg-surface border">
-        <p>Running local pass-and-play turn switching...</p>
+    <div class="pa-6 rounded-2xl bg-surface border shadow-sm d-flex flex-column align-items-center">
+        <DynamicGameLoader GameSlug="@GameSlug" IsOnline="false" IsHost="true" />
     </div>
 </div>
+
+@code {
+    [Parameter] public string GameSlug { get; set; } = string.Empty;
+}

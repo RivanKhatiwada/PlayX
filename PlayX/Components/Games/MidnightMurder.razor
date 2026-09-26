@@ -1,0 +1,15 @@
+@using PlayX.Services
+@inject PeerJsService PeerService
+@implements IDisposable
+
+<div class="d-flex flex-column align-items-center pa-4">
+    <MudText Typo="Typo.h5" Class="font-weight-bold">Midnight Murder Investigation</MudText>
+    <MudChip T="string" Color="Color.Error" Class="my-3">Role: Detective / Suspect</MudChip>
+    <MudText Typo="Typo.body2" Class="mud-text-secondary text-center">Look around the mansion, gather clues, and watch out for the murderer.</MudText>
+</div>
+
+@code {
+    [Parameter] public bool IsOnline { get; set; }
+    [Parameter] public bool IsHost { get; set; }
+    public void Dispose() { }
+}

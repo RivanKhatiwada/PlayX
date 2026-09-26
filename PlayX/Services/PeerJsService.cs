@@ -58,11 +58,13 @@ namespace PlayX.Services
         {
             if (data.StartsWith("GAME:"))
             {
-                var gameName = data.Substring(5);
-                OnGameInfoReceived?.Invoke(gameName);
+                // Extracts the game configuration payload (e.g., "Tic-Tac-Toe|2|2")
+                var gameInfoPayload = data.Substring(5);
+                OnGameInfoReceived?.Invoke(gameInfoPayload);
             }
             else
             {
+                // Routes all other control flags (SYNC_PLAYERS, START_COUNTDOWN, STOP_COUNTDOWN, etc.)
                 OnDataReceived?.Invoke(data);
             }
         }

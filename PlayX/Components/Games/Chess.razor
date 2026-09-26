@@ -1,0 +1,113 @@
+@using PlayX.Services
+@inject PeerJsService PeerService
+@implements IDisposable
+
+<div class="d-flex flex-column align-items-center pa-4">
+    <MudText Typo="Typo.h6" Class="mb-3 font-weight-bold">@(IsOnline ? (IsMyTurn ? "Your Turn (White/Black)" : "Opponent's Turn") : "Local Chess Match")</MudText>
+    
+    <div class="chess-board shadow-lg rounded">
+        @for (int r = 0; r < 8; r++)
+        {
+            @for (int c = 0; c < 8; c++)
+            {
+                int row = r, col = c;
+                bool isDark = (row + col) % 2 == 1;
+                bool isSelected = selectedRow == row && selectedCol == col;
+                <div class="chess-cell @(isDark ? "bg-dark-cell" : "bg-light-cell") @(isSelected ? "border-primary" : "")"
+                     @onclick="() => ClickSquare(row, col)">
+                    <span class="chess-piece">@board[row, col]</span>
+                </div>
+            }
+        }
+    </div>
+    
+    <MudButton Variant="Variant.Outlined" Color="Color.Error" Class="mt-4" OnClick="ResetChess">Reset Board</MudButton>
+</div>
+
+<style>
+    .chess-board { display: grid; grid-template-columns: repeat(8, 50px); grid-template-rows: repeat(8, 50px); border: 3px solid var(--mud-palette-lines-default); }
+    .chess-cell { display: flex; align-items: center; justify-content: center; font-size: 1.8rem; cursor: pointer; user-select: none; }
+    .bg-light-cell { background-color: #f0d9b5; }
+    .bg-dark-cell { background-color: #b58863; }
+</style>
+
+@code {
+    [Parameter] public bool IsOnline { get; set; }
+    [Parameter] public bool IsHost { get; set; }
+
+    private string[,] board = new string[8, 8];
+    private int? selectedRow = null;
+    private int? selectedCol = null;
+    private bool whiteTurn = true;
+
+    protected override void OnInitialized()
+    {
+        InitializeBoard();
+        if (IsOnline) PeerService.OnDataReceived += HandleData;
+    }
+
+    private bool IsMyTurn => !IsOnline || (IsHost && whiteTurn) || (!IsHost && !whiteTurn);
+
+    private void InitializeBoard()
+    {
+        string[] backRow = { "♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜" };
+        string[] wBackRow = { "♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖" };
+        for (int c = 0; c < 8; c++)
+        {
+            board[0, c] = backRow[c];
+            board[1, c] = "♟";
+            board[6, c] = "♙";
+            board[7, c] = wBackRow[c];
+            for (int r = 2; r < 6; r++) board[r, c] = "";
+        }
+        whiteTurn = true;
+    }
+
+    private async void ClickSquare(int r, int c)
+    {
+        if (IsOnline && !IsMyTurn) return;
+
+        if (selectedRow == null)
+        {
+            if (!string.IsNullOrEmpty(board[r, c]))
+            {
+                selectedRow = r; selectedCol = c;
+            }
+        }
+        else
+        {
+            board[r, c] = board[selectedRow.Value, selectedCol.Value];
+            board[selectedRow.Value, selectedCol.Value] = "";
+            
+            if (IsOnline) await PeerService.SendAsync($"CHESS_MOVE:{selectedRow},{selectedCol},{r},{c}");
+
+            selectedRow = null; selectedCol = null;
+            whiteTurn = !whiteTurn;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleData(string data)
+    {
+        if (data.StartsWith("CHESS_MOVE:"))
+        {
+            var parts = data[11..].Split(',');
+            if (parts.Length == 4 && int.TryParse(parts[0], out int sr) && int.TryParse(parts[1], out int sc) && int.TryParse(parts[2], out int tr) && int.TryParse(parts[3], out int tc))
+            {
+                board[tr, tc] = board[sr, sc];
+                board[sr, sc] = "";
+                whiteTurn = !whiteTurn;
+                InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    private async void ResetChess()
+    {
+        InitializeBoard();
+        if (IsOnline) await PeerService.SendAsync("CHESS_RESET");
+        StateHasChanged();
+    }
+
+    public void Dispose() { if (IsOnline) PeerService.OnDataReceived -= HandleData; }
+}

@@ -1,0 +1,46 @@
+@using PlayX.Components.Games
+
+@if (ResolvedComponent != null)
+{
+    <DynamicComponent Type="@ResolvedComponent" Parameters="@Parameters" />
+}
+else
+{
+    <div class="text-center py-8">
+        <MudIcon Icon="@Icons.Material.Filled.Construction" Size="Size.Large" Color="Color.Warning" Class="mb-3" />
+        <MudText Typo="Typo.h6">@GameSlug Arena is under construction...</MudText>
+        <MudText Typo="Typo.body2" Class="mud-text-secondary mt-1">Check back soon for this game release.</MudText>
+    </div>
+}
+
+@code {
+    [Parameter] public string GameSlug { get; set; } = string.Empty;
+    [Parameter] public bool IsOnline { get; set; }
+    [Parameter] public bool IsHost { get; set; }
+
+    private Type? ResolvedComponent;
+    private Dictionary<string, object> Parameters = new();
+
+    protected override void OnParametersSet()
+    {
+        // Normalize the game slug (e.g., "Midnight Murder" -> type lookup)
+        string normalizedKey = GameSlug.Replace(" ", "").Replace("-", "").ToLowerInvariant();
+
+        ResolvedComponent = normalizedKey switch
+        {
+            "tictactoe" => typeof(TicTacToe),
+            "chess" => typeof(Chess),
+            "ludo" => typeof(Ludo),
+            "auction" => typeof(Auction),
+            "midnightmurder" => typeof(MidnightMurder),
+            "whoisimposter" => typeof(WhoIsImposter),
+            _ => null
+        };
+
+        Parameters = new Dictionary<string, object>
+        {
+            { nameof(TicTacToe.IsOnline), IsOnline },
+            { nameof(TicTacToe.IsHost), IsHost }
+        };
+    }
+}

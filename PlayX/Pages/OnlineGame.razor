@@ -1,14 +1,69 @@
 @page "/game/online/{GameSlug}/{RoomCode}"
+@using PlayX.Components.Games
+@using PlayX.Services
+@inject PeerJsService PeerService
+@implements IDisposable
 
 <PageTitle>PlayX - Online @GameSlug</PageTitle>
 
-<div class="pa-6">
-    <div class="d-flex justify-space-between align-center mb-4">
-        <h1 class="text-h5 font-weight-bold">Arena: @GameSlug</h1>
-        <span class="mud-text-secondary">Room: <strong>@RoomCode</strong></span>
+<div class="pa-6 max-w-screen-md mx-auto">
+    <div class="d-flex justify-space-between align-center mb-6">
+        <div>
+            <h1 class="text-h5 font-weight-bold">Arena: @GameSlug</h1>
+            <span class="mud-text-secondary">Room Code: <strong class="text-primary">@RoomCode</strong></span>
+        </div>
+        <MudChip T="string" Color="@(_isConnected ? Color.Success : Color.Error)" Variant="Variant.Outlined">
+            @(_isConnected ? "Connected" : "Waiting for opponent...")
+        </MudChip>
     </div>
 
-    <div class="pa-4 rounded-lg bg-surface border">
-        <p>Status: @connectionStatus</p>
+    <div class="pa-6 rounded-2xl bg-surface border shadow-sm d-flex flex-column align-items-center">
+        <DynamicGameLoader GameSlug="@GameSlug" IsOnline="true" IsHost="_isHost" />
     </div>
 </div>
+
+@code {
+    [Parameter] public string GameSlug { get; set; } = string.Empty;
+    [Parameter] public string RoomCode { get; set; } = string.Empty;
+
+    [SupplyParameterFromQuery(Name = "isHost")]
+    public bool _isHost { get; set; } = false;
+
+    private bool _isConnected = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        PeerService.OnPeerConnected += HandlePeerConnected;
+        PeerService.OnPeerDisconnected += HandlePeerDisconnected;
+
+        if (_isHost)
+        {
+            // Host initializes the peer room with the custom RoomCode
+            await PeerService.InitializeAsync(RoomCode);
+        }
+        else
+        {
+            // Client initializes a random peer first, then connects to the Host's RoomCode
+            await PeerService.InitializeAsync();
+            await PeerService.ConnectAsync(RoomCode);
+        }
+    }
+
+    private void HandlePeerConnected(string peerId)
+    {
+        _isConnected = true;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void HandlePeerDisconnected()
+    {
+        _isConnected = false;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        PeerService.OnPeerConnected -= HandlePeerConnected;
+        PeerService.OnPeerDisconnected -= HandlePeerDisconnected;
+    }
+}

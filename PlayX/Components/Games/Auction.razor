@@ -1,0 +1,199 @@
+@using PlayX.Services
+@inject PeerJsService PeerService
+@implements IDisposable
+
+<div class="d-flex flex-column align-items-center justify-center pa-4">
+    <div class="mb-4 text-center">
+        <MudText Typo="Typo.h6" Class="font-weight-bold mb-1">@GetTurnStatus()</MudText>
+        @if (!IsMyTurn && IsOnline && !IsGameOver)
+        {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="rounded-pill my-2" Style="width: 150px;" />
+        }
+    </div>
+
+    <!-- Tic-Tac-Toe Grid -->
+    <div class="tic-tac-toe-grid">
+        @for (int i = 0; i < 9; i++)
+        {
+        int index = i;
+        <button class="tictactoe-cell @GetCellClass(board[index])"
+                @onclick="() => MakeMove(index)"
+                disabled="@(!CanPlay(index))">
+            @board[index]
+        </button>
+        }
+    </div>
+
+    @if (IsGameOver)
+    {
+    <div class="mt-6 text-center">
+        <MudText Typo="Typo.h5" Color="Color.Success" Class="font-weight-bold mb-3">@WinnerMessage</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ResetGame" StartIcon="@Icons.Material.Filled.Refresh">
+            Play Again
+        </MudButton>
+    </div>
+    }
+</div>
+
+<style>
+    .tic-tac-toe-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+        gap: 8px;
+    }
+    .tictactoe-cell {
+        background-color: var(--mud-palette-surface);
+        border: 2px solid var(--mud-palette-lines-default);
+        border-radius: 12px;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--mud-palette-text-primary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    .tictactoe-cell:hover:not(:disabled) {
+        border-color: var(--mud-palette-primary);
+        background-color: rgba(255, 77, 109, 0.05);
+    }
+    .tictactoe-cell:disabled {
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+</style>
+
+@code {
+[Parameter] public bool IsOnline { get; set; }
+[Parameter] public bool IsHost { get; set; }
+
+private string[] board = new string[9];
+private bool xTurn = true; // X goes first
+private bool IsGameOver = false;
+private string WinnerMessage = string.Empty;
+
+protected override void OnInitialized()
+{
+ResetBoardState();
+if (IsOnline)
+{
+PeerService.OnDataReceived += HandleNetworkData;
+}
+}
+
+private bool IsMyTurn => !IsOnline || (IsHost && xTurn) || (!IsHost && !xTurn);
+
+private string GetTurnStatus()
+{
+if (IsGameOver) return "Match Ended";
+if (!IsOnline) return xTurn ? "Player X's Turn" : "Player O's Turn";
+return IsMyTurn ? "Your Turn!" : "Waiting for opponent's move...";
+}
+
+private string GetCellClass(string val) => val switch
+{
+"X" => "text-primary",
+"O" => "text-secondary",
+_ => ""
+};
+
+private bool CanPlay(int index) => string.IsNullOrEmpty(board[index]) && !IsGameOver && IsMyTurn;
+
+private async void MakeMove(int index)
+{
+if (!CanPlay(index)) return;
+
+string currentSymbol = xTurn ? "X" : "O";
+board[index] = currentSymbol;
+
+CheckGameCompletion();
+
+if (IsOnline)
+{
+// Broadcast the move to the other peer(s) using format: TTT_MOVE:index
+await PeerService.SendAsync($"TTT_MOVE:{index}");
+}
+
+xTurn = !xTurn;
+StateHasChanged();
+}
+
+private void HandleNetworkData(string data)
+{
+if (data.StartsWith("TTT_MOVE:"))
+{
+if (int.TryParse(data.Substring(9), out int index))
+{
+if (string.IsNullOrEmpty(board[index]) && !IsGameOver)
+{
+string currentSymbol = xTurn ? "X" : "O";
+board[index] = currentSymbol;
+CheckGameCompletion();
+xTurn = !xTurn;
+InvokeAsync(StateHasChanged);
+}
+}
+}
+else if (data == "TTT_RESET")
+{
+ResetBoardState();
+InvokeAsync(StateHasChanged);
+}
+}
+
+private void CheckGameCompletion()
+{
+int[][] winningCombos = new int[][]
+{
+new[] {0,1,2}, new[] {3,4,5}, new[] {6,7,8}, // Rows
+new[] {0,3,6}, new[] {1,4,7}, new[] {2,5,8}, // Cols
+new[] {0,4,8}, new[] {2,4,6}                // Diagonals
+};
+
+foreach (var combo in winningCombos)
+{
+if (!string.IsNullOrEmpty(board[combo[0]]) &&
+board[combo[0]] == board[combo[1]] &&
+board[combo[0]] == board[combo[2]])
+{
+IsGameOver = true;
+WinnerMessage = $"Player {board[combo[0]]} Wins!";
+return;
+}
+}
+
+if (Array.TrueForAll(board, cell => !string.IsNullOrEmpty(cell)))
+{
+IsGameOver = true;
+WinnerMessage = "It's a Draw!";
+}
+}
+
+private async void ResetGame()
+{
+ResetBoardState();
+if (IsOnline)
+{
+await PeerService.SendAsync("TTT_RESET");
+}
+StateHasChanged();
+}
+
+private void ResetBoardState()
+{
+board = new string[9];
+xTurn = true;
+IsGameOver = false;
+WinnerMessage = string.Empty;
+}
+
+public void Dispose()
+{
+if (IsOnline)
+{
+PeerService.OnDataReceived -= HandleNetworkData;
+}
+}
+}
