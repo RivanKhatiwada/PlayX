@@ -1,113 +1,115 @@
-@using PlayX.Services
+@inject IJSRuntime JS
 @inject PeerJsService PeerService
 @implements IDisposable
 
-<div class="d-flex flex-column align-items-center pa-4">
-    <MudText Typo="Typo.h6" Class="mb-3 font-weight-bold">@(IsOnline ? (IsMyTurn ? "Your Turn (White/Black)" : "Opponent's Turn") : "Local Chess Match")</MudText>
-    
-    <div class="chess-board shadow-lg rounded">
-        @for (int r = 0; r < 8; r++)
+<div class="d-flex flex-column align-items-center justify-center pa-4">
+    <div class="mb-4 text-center">
+        <MudText Typo="Typo.h6" Class="font-weight-bold mb-1">@GameStatus</MudText>
+        @if (IsOnline && !IsMyTurn && !IsGameOver)
         {
-            @for (int c = 0; c < 8; c++)
-            {
-                int row = r, col = c;
-                bool isDark = (row + col) % 2 == 1;
-                bool isSelected = selectedRow == row && selectedCol == col;
-                <div class="chess-cell @(isDark ? "bg-dark-cell" : "bg-light-cell") @(isSelected ? "border-primary" : "")"
-                     @onclick="() => ClickSquare(row, col)">
-                    <span class="chess-piece">@board[row, col]</span>
-                </div>
-            }
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="rounded-pill my-2" Style="width: 150px;" />
         }
     </div>
-    
-    <MudButton Variant="Variant.Outlined" Color="Color.Error" Class="mt-4" OnClick="ResetChess">Reset Board</MudButton>
-</div>
 
-<style>
-    .chess-board { display: grid; grid-template-columns: repeat(8, 50px); grid-template-rows: repeat(8, 50px); border: 3px solid var(--mud-palette-lines-default); }
-    .chess-cell { display: flex; align-items: center; justify-content: center; font-size: 1.8rem; cursor: pointer; user-select: none; }
-    .bg-light-cell { background-color: #f0d9b5; }
-    .bg-dark-cell { background-color: #b58863; }
-</style>
+    <!-- Chess Board Container -->
+    <div id="chess-board-container" class="elevation-4 rounded-lg overflow-hidden"></div>
+</div>
 
 @code {
     [Parameter] public bool IsOnline { get; set; }
     [Parameter] public bool IsHost { get; set; }
+    [Parameter] public bool IsSolo { get; set; }
 
-    private string[,] board = new string[8, 8];
-    private int? selectedRow = null;
-    private int? selectedCol = null;
-    private bool whiteTurn = true;
+    private string GameStatus = "Your Turn (White)";
+    private bool IsMyTurn = true;
+    private bool IsGameOver = false;
+    private DotNetObjectReference<Chess>? _dotNetRef;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        InitializeBoard();
-        if (IsOnline) PeerService.OnDataReceived += HandleData;
-    }
-
-    private bool IsMyTurn => !IsOnline || (IsHost && whiteTurn) || (!IsHost && !whiteTurn);
-
-    private void InitializeBoard()
-    {
-        string[] backRow = { "♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜" };
-        string[] wBackRow = { "♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖" };
-        for (int c = 0; c < 8; c++)
+        _dotNetRef = DotNetObjectReference.Create(this);
+        if (IsOnline)
         {
-            board[0, c] = backRow[c];
-            board[1, c] = "♟";
-            board[6, c] = "♙";
-            board[7, c] = wBackRow[c];
-            for (int r = 2; r < 6; r++) board[r, c] = "";
+            PeerService.OnDataReceived += HandleNetworkData;
+            IsMyTurn = IsHost; // Host plays White, Client plays Black
+            GameStatus = IsMyTurn ? "Your Turn (White)" : "Opponent's Turn (Black)";
         }
-        whiteTurn = true;
     }
 
-    private async void ClickSquare(int r, int c)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (IsOnline && !IsMyTurn) return;
-
-        if (selectedRow == null)
+        if (firstRender)
         {
-            if (!string.IsNullOrEmpty(board[r, c]))
+            await JS.InvokeVoidAsync("initializeChessGame", _dotNetRef, new { IsOnline, IsHost, IsSolo });
+        }
+    }
+
+    private async void HandleNetworkData(string data)
+    {
+        if (data.StartsWith("CHESS_FEN:"))
+        {
+            var parts = data.Substring(10).Split('|');
+            var fen = parts[0];
+            var gameOverFlag = parts.Length > 1 && bool.Parse(parts[1]);
+
+            await JS.InvokeVoidAsync("loadChessFen", fen);
+
+            IsGameOver = gameOverFlag;
+            if (IsGameOver)
             {
-                selectedRow = r; selectedCol = c;
+                // If opponent sent the game-over FEN, you lost (or it's checkmate against you)
+                GameStatus = "Checkmate! You Lost.";
             }
-        }
-        else
-        {
-            board[r, c] = board[selectedRow.Value, selectedCol.Value];
-            board[selectedRow.Value, selectedCol.Value] = "";
-            
-            if (IsOnline) await PeerService.SendAsync($"CHESS_MOVE:{selectedRow},{selectedCol},{r},{c}");
-
-            selectedRow = null; selectedCol = null;
-            whiteTurn = !whiteTurn;
+            else
+            {
+                IsMyTurn = true;
+                GameStatus = "Your Turn!";
+            }
             StateHasChanged();
         }
     }
 
-    private void HandleData(string data)
+    [JSInvokable]
+    public async Task OnMoveCompleted(string fen, bool isGameOverStatus)
     {
-        if (data.StartsWith("CHESS_MOVE:"))
-        {
-            var parts = data[11..].Split(',');
-            if (parts.Length == 4 && int.TryParse(parts[0], out int sr) && int.TryParse(parts[1], out int sc) && int.TryParse(parts[2], out int tr) && int.TryParse(parts[3], out int tc))
-            {
-                board[tr, tc] = board[sr, sc];
-                board[sr, sc] = "";
-                whiteTurn = !whiteTurn;
-                InvokeAsync(StateHasChanged);
-            }
-        }
-    }
+        IsGameOver = isGameOverStatus;
 
-    private async void ResetChess()
-    {
-        InitializeBoard();
-        if (IsOnline) await PeerService.SendAsync("CHESS_RESET");
+        if (IsGameOver)
+        {
+            GameStatus = "Checkmate! You Won!";
+        }
+        else if (IsOnline)
+        {
+            IsMyTurn = false;
+            GameStatus = "Waiting for opponent...";
+        }
+        else if (IsSolo && !IsGameOver)
+        {
+            IsMyTurn = false;
+            GameStatus = "AI is thinking...";
+            StateHasChanged();
+            
+            await Task.Delay(400);
+            await JS.InvokeVoidAsync("makeAiMove");
+            IsMyTurn = true;
+            GameStatus = "Your Turn!";
+        }
+
+        // Pack FEN and game over status together so the receiver knows immediately
+        if (IsOnline)
+        {
+            await PeerService.SendAsync($"CHESS_FEN:{fen}|{IsGameOver}");
+        }
+
         StateHasChanged();
     }
 
-    public void Dispose() { if (IsOnline) PeerService.OnDataReceived -= HandleData; }
+    public void Dispose()
+    {
+        if (IsOnline)
+        {
+            PeerService.OnDataReceived -= HandleNetworkData;
+        }
+        _dotNetRef?.Dispose();
+    }
 }
